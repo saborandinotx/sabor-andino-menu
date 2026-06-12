@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sabor Andino Fast Food 5.0</title>
+<style>
+:root{--gold:#f4c430;--red:#d62828;--dark:#0d0d0d;--card:#1b1b1b;--green:#25D366}
+*{box-sizing:border-box}
+body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:var(--dark);color:#fff;line-height:1.45}
+header{background:linear-gradient(135deg,#000,#242424);text-align:center;padding:30px 15px}
+.logo{max-width:500px;width:95%;border-radius:14px}
+h1,h2,h3{color:var(--gold)}
+.lang{position:sticky;top:0;background:#000;padding:10px;text-align:center;z-index:20;border-bottom:1px solid #333}
+.lang button{padding:9px 16px;margin:4px;border:none;border-radius:20px;cursor:pointer;font-weight:700}
+.container{max-width:1150px;margin:auto;padding:22px 15px}
+.categoryGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-top:20px}
+.catBtn{background:#1b1b1b;border:2px solid var(--gold);border-radius:16px;color:#fff;padding:22px 12px;font-size:1.1rem;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.4)}
+.catBtn.active{background:var(--red);border-color:var(--red)}
+.title{border-left:6px solid var(--red);padding-left:12px;margin-top:30px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.card{background:var(--card);padding:16px;border-radius:14px;box-shadow:0 4px 14px rgba(0,0,0,.4);margin:8px 0}
+.price{color:var(--gold);font-weight:bold}
+button{font-family:inherit}
+.add,.noteBtn,.saveNote{border:0;border-radius:8px;padding:10px 12px;margin-top:10px;cursor:pointer;font-weight:bold}
+.add{background:var(--red);color:white}
+.noteBtn{background:#333;color:white;margin-left:6px}
+.saveNote{background:var(--green);color:white}
+.noteBox{display:none;margin-top:10px}
+.noteBox textarea{width:100%;min-height:70px;border-radius:8px;border:1px solid #444;padding:10px;background:#111;color:white}
+.extras,.optionsBox{margin-top:10px;background:#111;padding:10px;border-radius:10px}
+.extras label,.optionsBox label{display:block;margin:5px 0;color:#eee}
+.optionsBox select{width:100%;padding:9px;border-radius:8px;background:#222;color:#fff;border:1px solid #444}
+.cart{position:fixed;right:15px;bottom:15px;width:390px;max-width:calc(100% - 30px);background:#000;border:2px solid var(--gold);border-radius:16px;padding:15px;z-index:30;box-shadow:0 0 20px #000}
+.cart h3{margin-top:0}.cart-items{max-height:260px;overflow:auto}
+.cart-row{border-bottom:1px solid #333;padding:9px 0;font-size:.92rem}
+.cartTop{display:flex;justify-content:space-between;gap:8px}
+.qty{display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap}
+.qty button,.remove,.editNote{background:#333;color:white;border:0;border-radius:5px;padding:4px 8px}
+.whatsapp{width:100%;background:var(--green);color:white;border:0;border-radius:8px;padding:12px;margin-top:10px;font-weight:bold}
+.sms{width:100%;background:#007aff;color:white;border:0;border-radius:8px;padding:12px;margin-top:8px;font-weight:bold}
+.copy{width:100%;background:#f4c430;color:#111;border:0;border-radius:8px;padding:12px;margin-top:8px;font-weight:bold}
+.clear{width:100%;background:#555;color:white;border:0;border-radius:8px;padding:9px;margin-top:8px}
+.btn{display:inline-block;background:var(--green);color:white;padding:14px 22px;border-radius:10px;text-decoration:none;font-weight:bold}
+.small,.ingredients{color:#ddd;font-size:.92rem}
+.paymentBox{background:#111;border-radius:10px;padding:10px;margin-top:10px}
+.paymentBox select{width:100%;padding:9px;border-radius:8px;background:#222;color:white;border:1px solid #444}
+footer{background:#000;text-align:center;padding:28px;margin-top:25px;margin-bottom:330px}
+@media(max-width:760px){.cart{position:static;width:auto;margin:20px 15px}.container{padding:14px}.logo{width:100%}footer{margin-bottom:0}.noteBtn{margin-left:0;display:block}.categoryGrid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<header>
+<img src="logo_sabor_andino.jpg" class="logo" alt="Sabor Andino">
+<h1>Sabor Andino Fast Food</h1>
+<p data-es="🇻🇪 Sabor Venezolano en Texas 🇺🇸" data-en="🇻🇪 Venezuelan Flavor in Texas 🇺🇸"></p>
+<p data-es="Selecciona una categoría para ver el menú." data-en="Select a category to view the menu."></p>
+<a class="btn" href="https://wa.me/14698230192?text=Hola%20quiero%20realizar%20un%20pedido" data-es="Ordenar por WhatsApp" data-en="Order on WhatsApp"></a>
+<p data-es="🕒 Todos los días · 6:00 PM – 1:00 AM" data-en="🕒 Open daily · 6:00 PM – 1:00 AM"></p>
+</header>
+
+<div class="lang">
+<button type="button" onclick="setLang('es')">Español</button>
+<button type="button" onclick="setLang('en')">English</button>
+</div>
+
+<div class="container">
+<h2 class="title" data-es="🍽️ Categorías" data-en="🍽️ Categories"></h2>
+<div class="categoryGrid" id="categoryButtons"></div>
+<div id="menu"></div>
+</div>
+
+<div class="cart">
+<h3 data-es="🛒 Carrito" data-en="🛒 Cart"></h3>
+<div id="cartItems" class="cart-items"></div>
+<div class="paymentBox">
+<label data-es="Método de pago:" data-en="Payment method:"></label>
+<select id="paymentMethod">
+<option value="Efectivo / Cash">Efectivo / Cash</option>
+<option value="Tarjeta / Card">Tarjeta / Card</option>
+<option value="Zelle - 4694208395 - Uriel Sosa">Zelle - 4694208395 - Uriel Sosa</option>
+<option value="Cash App - 4694208395 - Uriel Sosa">Cash App - 4694208395 - Uriel Sosa</option>
+</select>
+</div>
+<p><b data-es="Total:" data-en="Total:"></b> <span id="total">$0.00</span></p>
+<button class="whatsapp" onclick="sendWhatsApp()" data-es="Enviar por WhatsApp" data-en="Send by WhatsApp"></button>
+<button class="sms" onclick="sendSMS()" data-es="Enviar por SMS" data-en="Send by SMS"></button>
+<button class="copy" onclick="copyOrder()" data-es="Copiar pedido" data-en="Copy order"></button>
+<button class="clear" onclick="clearCart()" data-es="Vaciar carrito" data-en="Clear cart"></button>
+</div>
+
+<footer data-es="Gracias por elegir Sabor Andino. ¡Tu sabor venezolano favorito en Texas!" data-en="Thank you for choosing Sabor Andino. Your favorite Venezuelan flavor in Texas!"></footer>
+
+<script>
+let currentLang = "es";
+let cart = [];
+let activeCategory = "hotdogs";
+
+const extrasList = [
+  {es:"Extra queso", en:"Extra cheese", price:1},
+  {es:"Extra tocineta", en:"Extra bacon", price:2},
+  {es:"Extra proteína", en:"Extra protein", price:3},
+  {es:"Extra salsa tártara", en:"Extra tartar sauce", price:0}
+];
+
+const commonFullEs = "Lechuga, tomate, cebolla morada, ensalada rayada, jamón, queso, huevo, tocineta, maíz, papitas al hilo y salsas.";
+const commonFullEn = "Lettuce, tomato, red onion, shredded salad, ham, cheese, egg, bacon, corn, potato sticks and house sauces.";
+const arepaBaseEs = "Aguacate y queso incluidos. Lechuga, tomate y cebolla opcionales.";
+const arepaBaseEn = "Avocado and cheese included. Lettuce, tomato and onion are optional.";
+
+const sections = [
+{key:"hotdogs",icon:"🌭",title:{es:"Hot Dogs",en:"Hot Dogs"},items:[
+{es:"Hot Dog Normal",en:"Classic Hot Dog",price:7,extras:true,ingEs:"Salchicha, ensalada rayada, papitas al hilo, queso parmesano y salsas.",ingEn:"Sausage, shredded salad, potato sticks, parmesan cheese and house sauces."},
+{es:"Hot Dog Especial",en:"Special Hot Dog",price:9,extras:true,ingEs:"Salchicha, jamón, queso, maíz, huevo cocido, ensalada rayada, papitas al hilo y salsas.",ingEn:"Sausage, ham, cheese, corn, boiled egg, shredded salad, potato sticks and house sauces."}
+]},
+{key:"hamburguesas",icon:"🍔",title:{es:"Hamburguesas",en:"Burgers"},items:[
+{es:"Hamburguesa Normal",en:"Classic Burger",price:10,extras:true,ingEs:"Carne de res, lechuga, tomate, cebolla morada, ensalada rayada, papitas al hilo y salsas.",ingEn:"Beef patty, lettuce, tomato, red onion, shredded salad, potato sticks and house sauces."},
+{es:"Hamburguesa Especial",en:"Special Burger",price:13,extras:true,ingEs:"Doble carne, jamón, queso, huevo, tocineta, lechuga, tomate, cebolla morada, ensalada rayada, maíz, papitas al hilo y salsas.",ingEn:"Double beef patty, ham, cheese, egg, bacon, lettuce, tomato, red onion, shredded salad, corn, potato sticks and house sauces."},
+{es:"Hamburguesa Especial de Pollo",en:"Chicken Special Burger",price:13,extras:true,ingEs:"Pollo, "+commonFullEs,ingEn:"Chicken, "+commonFullEn},
+{es:"Hamburguesa Especial de Chuleta Ahumada",en:"Smoked Pork Special Burger",price:14,extras:true,ingEs:"Chuleta ahumada, "+commonFullEs,ingEn:"Smoked pork chop, "+commonFullEn},
+{es:"Hamburguesa Especial de Lomito",en:"Beef Tenderloin Special Burger",price:15,extras:true,ingEs:"Lomito, "+commonFullEs,ingEn:"Beef tenderloin, "+commonFullEn},
+{es:"Hamburguesa Especial Mixta",en:"Mixed Special Burger",price:17,extras:true,ingEs:"Combinación de 2 carnes a elección, "+commonFullEs,ingEn:"Combination of 2 meats of choice, "+commonFullEn},
+{es:"Hamburguesa Especial Triple",en:"Triple Special Burger",price:19,extras:true,ingEs:"Combinación de 3 carnes a elección, "+commonFullEs,ingEn:"Combination of 3 meats of choice, "+commonFullEn}
+]},
+{key:"pepitos",icon:"🥖",title:{es:"Pepitos",en:"Pepitos"},items:[
+{es:"Pepito de Pollo",en:"Chicken Pepito",price:14,extras:true,ingEs:"Pollo, "+commonFullEs,ingEn:"Chicken, "+commonFullEn},
+{es:"Pepito de Lomito",en:"Beef Tenderloin Pepito",price:15,extras:true,ingEs:"Lomito, "+commonFullEs,ingEn:"Beef tenderloin, "+commonFullEn},
+{es:"Pepito de Chuleta",en:"Smoked Pork Pepito",price:15,extras:true,ingEs:"Chuleta, "+commonFullEs,ingEn:"Smoked pork, "+commonFullEn},
+{es:"Pepito Doble",en:"Double Pepito",price:17,extras:true,ingEs:"Doble proteína, "+commonFullEs,ingEn:"Double protein, "+commonFullEn},
+{es:"Pepito Triple",en:"Triple Pepito",price:19,extras:true,ingEs:"Triple proteína, "+commonFullEs,ingEn:"Triple protein, "+commonFullEn}
+]},
+{key:"arepas",icon:"🫓",title:{es:"Arepas",en:"Arepas"},items:[
+{es:"Pollo Mechado",en:"Shredded Chicken",price:8,extras:true,arepa:true,ingEs:"Pollo mechado. "+arepaBaseEs,ingEn:"Shredded chicken. "+arepaBaseEn},
+{es:"Carne Mechada",en:"Shredded Beef",price:9,extras:true,arepa:true,ingEs:"Carne mechada. "+arepaBaseEs,ingEn:"Shredded beef. "+arepaBaseEn},
+{es:"Salchicha con Huevo",en:"Sausage & Egg",price:8,extras:true,arepa:true,ingEs:"Salchicha y huevo. "+arepaBaseEs,ingEn:"Sausage and egg. "+arepaBaseEn},
+{es:"Dominó (Caraotas y Queso)",en:"Black Beans & Cheese",price:8,extras:true,arepa:true,ingEs:"Caraotas negras, queso y aguacate. Lechuga, tomate y cebolla opcionales.",ingEn:"Black beans, cheese and avocado. Lettuce, tomato and onion are optional."}
+]},
+{key:"salchipapas",icon:"🍟",title:{es:"Salchipapas",en:"Loaded Fries"},items:[
+{es:"Salchipapas Sencilla",en:"Classic Loaded Fries",price:13,extras:true,ingEs:"Papas fritas, salchicha, maíz, queso rallado y salsas.",ingEn:"French fries, sausage, corn, grated cheese and house sauces."},
+{es:"Salchipapas Especial",en:"Special Loaded Fries",price:16,extras:true,ingEs:"Papas fritas, salchicha, una proteína a elección, tocineta, maíz, queso rallado y salsas. Proteínas: carne mechada, lomito, pollo mechado o pollo a la plancha.",ingEn:"French fries, sausage, one protein of choice, bacon, corn, grated cheese and house sauces. Proteins: shredded beef, beef tenderloin, shredded chicken or grilled chicken."},
+{es:"Salchipapas Mixta",en:"Mixed Loaded Fries",price:18,extras:true,ingEs:"Papas fritas, salchicha, dos proteínas a elección, tocineta, maíz, queso rallado y salsas. Proteínas: carne mechada, lomito, pollo mechado o pollo a la plancha.",ingEn:"French fries, sausage, two proteins of choice, bacon, corn, grated cheese and house sauces. Proteins: shredded beef, beef tenderloin, shredded chicken or grilled chicken."}
+]},
+{key:"bebidas",icon:"🥤",title:{es:"Bebidas",en:"Drinks"},items:[
+{es:"Coca-Cola",en:"Coca-Cola",price:2,extras:false,noNotes:true,ingEs:"Refresco en lata o botella según disponibilidad.",ingEn:"Soda can or bottle depending on availability."},
+{es:"Sprite",en:"Sprite",price:2,extras:false,noNotes:true,ingEs:"Refresco en lata o botella según disponibilidad.",ingEn:"Soda can or bottle depending on availability."},
+{es:"Fanta Naranja",en:"Orange Fanta",price:2,extras:false,noNotes:true,ingEs:"Refresco sabor naranja.",ingEn:"Orange soda."},
+{es:"Fanta Piña",en:"Pineapple Fanta",price:2,extras:false,noNotes:true,ingEs:"Refresco sabor piña.",ingEn:"Pineapple soda."},
+{es:"Malta Polar",en:"Malta Polar",price:3,extras:false,noNotes:true,ingEs:"Malta Polar de lata.",ingEn:"Malta Polar can."},
+{es:"Frescolita Original",en:"Original Frescolita",price:3,extras:false,noNotes:true,ingEs:"Refresco venezolano sabor original.",ingEn:"Venezuelan soda, original flavor."},
+{es:"Frescolita Uva",en:"Grape Frescolita",price:3,extras:false,noNotes:true,ingEs:"Refresco venezolano sabor uva.",ingEn:"Venezuelan soda, grape flavor."}
+]}
+];
+
+function money(n){return "$"+Number(n).toFixed(2);}
+function safe(v){return String(v||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));}
+function keyFor(item, extras, note, options){return item.es+"|"+extras.map(e=>e.es).join(",")+"|"+note+"|"+JSON.stringify(options||{});}
+function getExtras(card){return Array.from(card.querySelectorAll(".extraCheck:checked")).map(ch=>extrasList[Number(ch.value)]);}
+function getOptions(card,item){
+  const options={};
+  if(item.arepa){
+    const type=card.querySelector(".arepaType")?.value || "Asada / Grilled";
+    options.arepaType=type;
+  }
+  return options;
+}
+
+function renderCategoryButtons(){
+const wrap=document.getElementById("categoryButtons");
+wrap.innerHTML="";
+sections.filter(s=>s.key!=="bebidas").forEach(sec=>{
+const btn=document.createElement("button");
+btn.type="button";
+btn.className="catBtn"+(activeCategory===sec.key?" active":"");
+btn.textContent=sec.icon+" "+sec.title[currentLang];
+btn.onclick=()=>{activeCategory=sec.key;renderCategoryButtons();renderMenu();document.getElementById("menu").scrollIntoView({behavior:"smooth"});};
+wrap.appendChild(btn);
+});
+}
+
+function renderMenu(){
+const menu=document.getElementById("menu");
+menu.innerHTML="";
+const sec=sections.find(s=>s.key===activeCategory);
+if(!sec)return;
+const h=document.createElement("h2");
+h.className="title";
+h.textContent=sec.icon+" "+sec.title[currentLang];
+menu.appendChild(h);
+const grid=document.createElement("div");
+grid.className="grid";
+sec.items.forEach((item,iIndex)=>{
+const card=document.createElement("div");
+card.className="card";
+const ing=currentLang==="es"?item.ingEs:item.ingEn;
+const noteId=`note-${sec.key}-${iIndex}`;
+const extrasHtml=item.extras ? `<div class="extras"><b>${currentLang==="es"?"Extras opcionales:":"Optional extras:"}</b>${extrasList.map((e,idx)=>`<label><input class="extraCheck" type="checkbox" value="${idx}"> ${safe(e[currentLang])} ${e.price>0? "+"+money(e.price) : (currentLang==="es"?" Gratis":" Free")}</label>`).join("")}</div>` : "";
+const arepaHtml=item.arepa ? `<div class="optionsBox"><b>${currentLang==="es"?"Tipo de arepa:":"Arepa type:"}</b><select class="arepaType"><option value="Asada / Grilled">${currentLang==="es"?"Asada":"Grilled"}</option><option value="Frita / Fried">${currentLang==="es"?"Frita":"Fried"}</option></select></div>` : "";
+const notesHtml=item.noNotes ? "" : `<button class="noteBtn" type="button">${currentLang==="es"?"📝 Nota":"📝 Note"}</button>
+<div class="noteBox">
+<textarea id="${noteId}" placeholder="${currentLang==="es"?"Ej: sin cebolla, extra salsa...":"Ex: no onion, extra sauce..."}"></textarea>
+<button class="saveNote" type="button">${currentLang==="es"?"Guardar nota":"Save note"}</button>
+</div>`;
+card.innerHTML=`<h3>${safe(item[currentLang])}</h3><p class="price">${money(item.price)}</p>
+<p class="ingredients"><b>${currentLang==="es"?"Ingredientes:":"Ingredients:"}</b> ${safe(ing)}</p>
+${arepaHtml}
+${extrasHtml}
+${notesHtml}
+<button class="add" type="button">${currentLang==="es"?"Agregar al carrito":"Add to cart"}</button>`;
+if(!item.noNotes){
+card.querySelector(".noteBtn").addEventListener("click",()=>{const box=card.querySelector(".noteBox");box.style.display=box.style.display==="block"?"none":"block";});
+card.querySelector(".saveNote").addEventListener("click",()=>{alert(currentLang==="es"?"Nota guardada. Ahora puedes agregar el producto al carrito.":"Note saved. Now you can add the item to the cart.");});
+}
+card.querySelector(".add").addEventListener("click",()=>addToCart(item,noteId,item.extras?getExtras(card):[],getOptions(card,item)));
+grid.appendChild(card);
+});
+menu.appendChild(grid);
+
+const drinks=sections.find(s=>s.key==="bebidas");
+const drinksDetails=document.createElement("details");
+drinksDetails.className="card";
+drinksDetails.innerHTML=`<summary style="cursor:pointer;font-weight:bold;color:#f4c430">${drinks.icon} ${drinks.title[currentLang]}</summary>`;
+const drinkGrid=document.createElement("div");
+drinkGrid.className="grid";
+drinks.items.forEach((item,i)=>{
+const d=document.createElement("div");
+d.className="card";
+d.innerHTML=`<h3>${safe(item[currentLang])}</h3><p class="price">${money(item.price)}</p><p class="ingredients">${safe(currentLang==="es"?item.ingEs:item.ingEn)}</p>
+<button class="add" type="button">${currentLang==="es"?"Agregar al carrito":"Add to cart"}</button>`;
+d.querySelector(".add").onclick=()=>addToCart(item,"",[],{});
+drinkGrid.appendChild(d);
+});
+drinksDetails.appendChild(drinkGrid);
+menu.appendChild(drinksDetails);
+
+const contact=document.createElement("section");
+contact.innerHTML=`<h2 class="title">${currentLang==="es"?"📱 Contacto y pagos":"📱 Contact and payments"}</h2>
+<div class="card">
+📞 WhatsApp / SMS: (469) 823-0192<br>
+📸 Instagram: @saborandinotx<br>
+👍 Facebook: SaborAndino Tex<br><br>
+💵 ${currentLang==="es"?"Efectivo":"Cash"}<br>
+💳 ${currentLang==="es"?"Tarjeta":"Card"}<br>
+⚡ Zelle: 469-420-8395 · Uriel Sosa<br>
+💲 Cash App: 469-420-8395 · Uriel Sosa
+</div>`;
+menu.appendChild(contact);
+}
+
+function setLang(lang){
+currentLang=lang;document.documentElement.lang=lang;
+document.querySelectorAll("[data-es]").forEach(el=>{el.textContent=lang==="es"?el.getAttribute("data-es"):el.getAttribute("data-en");});
+renderCategoryButtons();renderMenu();renderCart();
+}
+
+function addToCart(item,noteId,extras,options){
+const noteEl=document.getElementById(noteId);
+const note=noteEl?noteEl.value.trim():"";
+const key=keyFor(item,extras,note,options);
+const found=cart.find(row=>row.key===key);
+if(found){found.qty+=1;}else{cart.push({key,item,note,extras,options:options||{},qty:1});}
+renderCart();
+}
+
+function changeQty(index,delta){cart[index].qty+=delta;if(cart[index].qty<=0)cart.splice(index,1);renderCart();}
+function removeFromCart(index){cart.splice(index,1);renderCart();}
+function clearCart(){cart=[];renderCart();}
+function editNote(index){
+const current=cart[index].note||"";
+const newNote=prompt(currentLang==="es"?"Editar nota:":"Edit note:",current);
+if(newNote!==null){cart[index].note=newNote.trim();cart[index].key=keyFor(cart[index].item,cart[index].extras,cart[index].note,cart[index].options);renderCart();}
+}
+function itemTotal(row){const extrasTotal=row.extras.reduce((sum,e)=>sum+e.price,0);return(row.item.price+extrasTotal)*row.qty;}
+
+function renderCart(){
+const box=document.getElementById("cartItems");
+const total=cart.reduce((sum,row)=>sum+itemTotal(row),0);
+box.innerHTML=cart.length?"":`<p class="small">${currentLang==="es"?"Tu carrito está vacío.":"Your cart is empty."}</p>`;
+cart.forEach((row,index)=>{
+const item=row.item;
+const div=document.createElement("div");
+div.className="cart-row";
+const extrasText=row.extras.length?row.extras.map(e=>`${e[currentLang]} ${e.price>0? "+"+money(e.price):(currentLang==="es"?" Gratis":" Free")}`).join(", "):"";
+const optionText=row.options && row.options.arepaType ? `<div class="small"><b>${currentLang==="es"?"Tipo:":"Type:"}</b> ${row.options.arepaType}</div>` : "";
+div.innerHTML=`<div class="cartTop"><span>${row.qty}x ${safe(item[currentLang])} - ${money(item.price)}</span><button class="remove" type="button">X</button></div>
+${optionText}
+${extrasText?`<div class="small"><b>Extras:</b> ${safe(extrasText)}</div>`:""}
+${row.note?`<div class="small"><b>${currentLang==="es"?"Nota:":"Note:"}</b> ${safe(row.note)}</div>`:""}
+<div class="qty"><button class="minus" type="button">-</button><span>${row.qty}</span><button class="plus" type="button">+</button>${item.noNotes?"":`<button class="editNote" type="button">${currentLang==="es"?"Editar nota":"Edit note"}</button>`}<span class="price">${money(itemTotal(row))}</span></div>`;
+div.querySelector(".remove").onclick=()=>removeFromCart(index);
+div.querySelector(".minus").onclick=()=>changeQty(index,-1);
+div.querySelector(".plus").onclick=()=>changeQty(index,1);
+const editBtn=div.querySelector(".editNote");
+if(editBtn) editBtn.onclick=()=>editNote(index);
+box.appendChild(div);
+});
+document.getElementById("total").textContent=money(total);
+document.querySelectorAll("[data-es]").forEach(el=>{if(!el.closest("#menu"))el.textContent=currentLang==="es"?el.getAttribute("data-es"):el.getAttribute("data-en");});
+}
+
+function buildOrderText(){
+if(cart.length===0)return"";
+let lines=[];
+lines.push(currentLang==="es"?"Hola Sabor Andino, quiero realizar este pedido:":"Hello Sabor Andino, I would like to place this order:");
+lines.push("");
+cart.forEach((row,i)=>{
+const base=row.item.price;
+const extrasTotal=row.extras.reduce((sum,e)=>sum+e.price,0);
+lines.push(`${i+1}. ${row.qty}x ${row.item[currentLang]} - ${money((base+extrasTotal)*row.qty)}`);
+if(row.options && row.options.arepaType) lines.push(`${currentLang==="es"?"Tipo":"Type"}: ${row.options.arepaType}`);
+if(row.extras.length)lines.push(`Extras: ${row.extras.map(e=>e[currentLang]+" "+(e.price>0? "+"+money(e.price):(currentLang==="es"?" Gratis":" Free"))).join(", ")}`);
+if(row.note)lines.push(`${currentLang==="es"?"Nota":"Note"}: ${row.note}`);
+lines.push("");
+});
+const total=cart.reduce((sum,row)=>sum+itemTotal(row),0);
+lines.push(`Total: ${money(total)}`);
+lines.push(`${currentLang==="es"?"Método de pago":"Payment method"}: ${document.getElementById("paymentMethod").value}`);
+lines.push("");
+lines.push("Zelle / Cash App: 4694208395 - Uriel Sosa");
+return lines.join("\n");
+}
+
+function sendWhatsApp(){
+const text=buildOrderText();
+if(!text){alert(currentLang==="es"?"Agrega productos al carrito primero.":"Add products to the cart first.");return;}
+window.open("https://wa.me/14698230192?text="+encodeURIComponent(text),"_blank");
+}
+function sendSMS(){
+const text=buildOrderText();
+if(!text){alert(currentLang==="es"?"Agrega productos al carrito primero.":"Add products to the cart first.");return;}
+window.location.href="sms:14698230192?&body="+encodeURIComponent(text);
+}
+function copyOrder(){
+const text=buildOrderText();
+if(!text){alert(currentLang==="es"?"Agrega productos al carrito primero.":"Add products to the cart first.");return;}
+navigator.clipboard.writeText(text).then(()=>alert(currentLang==="es"?"Pedido copiado.":"Order copied."));
+}
+setLang("es");
+</script>
+</body>
+</html>
